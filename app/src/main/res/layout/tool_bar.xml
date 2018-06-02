@@ -12,7 +12,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.9">
+            android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/reduce"
@@ -35,16 +35,15 @@
                 android:src="@drawable/enlarge" />
         </LinearLayout>
 
-        <com.sjk.palette.SizePreview
-            android:id="@+id/sizePreview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+        <com.sjk.palette.PaintPreview
+            android:id="@+id/paintPreview"
+            android:layout_width="50dp"
+            android:layout_height="match_parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.9">
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/strokeColor"
@@ -52,7 +51,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="#000000" />
+                android:text="#FF000000" />
         </LinearLayout>
 
     </LinearLayout>

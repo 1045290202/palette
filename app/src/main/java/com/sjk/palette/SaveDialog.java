@@ -2,25 +2,38 @@ package com.sjk.palette;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SaveDialog extends PopupWindow {
     private Context context;
     private View view;
     private InkPresenter inkPresenter;
     private char[] illegalCharacters = {'\\', '/', ':', '*', '?', '#', '"', '<', '>', '|', ' '};
+    private String fileFormat;
 
     public SaveDialog(Context context) {
         setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        this.view = LayoutInflater.from(context).inflate(R.layout.activity_save_dialog, null);
+        this.view = LayoutInflater.from(context).inflate(R.layout.save_dialog, null);
         this.context = context;
 
         // 设置外部可点击
@@ -58,6 +71,21 @@ public class SaveDialog extends PopupWindow {
         this.setAnimationStyle(R.style.BottomDialogAnimation);
 
         onButtonClick();
+        RadioGroup fileFormatRadioGroup = view.findViewById(R.id.file_format_radio_group);
+        RadioButton radioButton = (RadioButton) fileFormatRadioGroup.getChildAt(0);
+        TextView textView = view.findViewById(R.id.file_format_text_view);
+        fileFormat = textView.getText().toString();
+        radioButton.setChecked(true);
+        fileFormatRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton checkedRadioButton = view.findViewById(checkedId);
+                TextView textView = view.findViewById(R.id.file_format_text_view);
+                textView.setText("." + checkedRadioButton.getText());
+                fileFormat = textView.getText().toString();
+            }
+        });
+
     }
 
     public void onButtonClick() {
@@ -84,7 +112,7 @@ public class SaveDialog extends PopupWindow {
                     }
                     if (judgeFlag == true) {
                         inkPresenter = MainActivity.getMainActivity().getInkPresenter();
-                        inkPresenter.save(fileName);
+                        inkPresenter.save(fileName, fileFormat);
                         dismiss();
                     } else {
                         Toast.makeText(context, "文件名可能输错了呢", Toast.LENGTH_SHORT).show();

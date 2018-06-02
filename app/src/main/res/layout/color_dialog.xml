@@ -21,14 +21,14 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="色值（例如：#FFFFFF）"
-            android:textColor="#aaaaaa" />
+            android:text="色值（例如：#FFFFFFFF）"
+            android:textColor="#ffaaaaaa" />
 
         <EditText
             android:id="@+id/color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLength="7"
+            android:maxLength="9"
             android:singleLine="true"
             android:textCursorDrawable="@drawable/cursor_color"
             android:theme="@style/EditText" />

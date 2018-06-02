@@ -5,10 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
-public class SizePreview extends InkPresenter {
+public class PaintPreview extends InkPresenter {
     private static Paint paint;
 
-    public SizePreview(Context context, AttributeSet attrs) {
+    public PaintPreview(Context context, AttributeSet attrs) {
         super(context, attrs);
         paint = new Paint();
         paint.setAntiAlias(true);
@@ -19,6 +19,7 @@ public class SizePreview extends InkPresenter {
     @Override
     public void onDraw(Canvas canvas) {
         paint.setStrokeWidth(dp2px(MainActivity.getMainActivity().getStrokeWidthText()));
+        paint.setColor(MainActivity.getMainActivity().getStrokeColorText());
         canvas.drawPoint(canvas.getWidth() / 2, canvas.getHeight() / 2, paint);
     }
 

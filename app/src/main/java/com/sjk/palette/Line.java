@@ -7,11 +7,11 @@ import android.graphics.PointF;
 import java.util.ArrayList;
 
 public class Line {
-    private Path path = new Path();
+    private Path path;
     private ArrayList<PointF> line = new ArrayList<>();
-    private int width = 0;
+    private int width = 3;
     private int color = Color.BLACK;
-    private int paintMode = 1;
+    private InkPresenter.PaintMode paintMode = InkPresenter.PaintMode.ROUND;
 
     public void setPath(Path path) {
         this.path = path;
@@ -21,11 +21,11 @@ public class Line {
         return path;
     }
 
-    public void setPaintMode(int paintMode) {
+    public void setPaintMode(InkPresenter.PaintMode paintMode) {
         this.paintMode = paintMode;
     }
 
-    public int getPaintMode() {
+    public InkPresenter.PaintMode getPaintMode() {
         return paintMode;
     }
 

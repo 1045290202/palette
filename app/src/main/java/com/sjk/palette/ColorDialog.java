@@ -18,7 +18,7 @@ public class ColorDialog extends PopupWindow {
 
     public ColorDialog(Context context) {
         setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        this.view = LayoutInflater.from(context).inflate(R.layout.activity_color_dialog, null);
+        this.view = LayoutInflater.from(context).inflate(R.layout.color_dialog, null);
         this.context = context;
         // 设置外部可点击
         this.setOutsideTouchable(true);
@@ -59,14 +59,21 @@ public class ColorDialog extends PopupWindow {
             public void onClick(View v) {
                 EditText editText = view.findViewById(R.id.color);
                 String colorValue = editText.getText().toString();
-                if (colorValue.matches("^#([0-9a-fA-F]{6})$")) {
+                colorValue = colorValue.toUpperCase();
+                if (colorValue.matches("^#([0-9A-F]{8})$")) {
                     MainActivity.getMainActivity().setStrokeColorText(colorValue);
                     dismiss();
-                } else if (colorValue.matches("^([0-9a-fA-F]{6})$")) {
+                } else if (colorValue.matches("^([0-9A-F]{8})$")) {
                     MainActivity.getMainActivity().setStrokeColorText("#" + colorValue);
                     dismiss();
+                } else if (colorValue.matches("^#([0-9A-F]{6})$")) {
+                    MainActivity.getMainActivity().setStrokeColorText(colorValue.replace("#", "#FF"));
+                    dismiss();
+                } else if (colorValue.matches("^([0-9A-F]{6})$")) {
+                    MainActivity.getMainActivity().setStrokeColorText("#FF" + colorValue);
+                    dismiss();
                 } else {
-                    Toast.makeText(context,"哎呀色值输入错误了呢，快重新输入吧！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "哎呀色值输入错误了呢，快重新输入吧！", Toast.LENGTH_SHORT).show();
                 }
             }
         });

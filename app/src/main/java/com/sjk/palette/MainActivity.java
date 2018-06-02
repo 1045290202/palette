@@ -66,6 +66,22 @@ public class MainActivity extends Activity {
         return inkPresenter;
     }
 
+    public void createSaveDialog() {
+        SaveDialog saveDialog = new SaveDialog(getApplicationContext());
+        saveDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
+        params[0].alpha = 0.7f;
+        getWindow().setAttributes(params[0]);
+        saveDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                params[0] = getWindow().getAttributes();
+                params[0].alpha = 1f;
+                getWindow().setAttributes(params[0]);
+            }
+        });
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private void titleOnTouchListener() {
         final TextView save = findViewById(R.id.save);
@@ -81,19 +97,7 @@ public class MainActivity extends Activity {
                             save.setBackgroundColor(Color.parseColor("#eeeeee"));
                         } else {//未移出
                             save.setBackgroundColor(Color.parseColor("#eeeeee"));
-                            SaveDialog saveDialog = new SaveDialog(getApplicationContext());
-                            saveDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-                            final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
-                            params[0].alpha = 0.7f;
-                            getWindow().setAttributes(params[0]);
-                            saveDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                                @Override
-                                public void onDismiss() {
-                                    params[0] = getWindow().getAttributes();
-                                    params[0].alpha = 1f;
-                                    getWindow().setAttributes(params[0]);
-                                }
-                            });
+                            createSaveDialog();
                         }
                         break;
                     default:
@@ -174,8 +178,8 @@ public class MainActivity extends Activity {
     }
 
     public void repaintSizePreview() {
-        SizePreview sizePreview = findViewById(R.id.sizePreview);
-        sizePreview.repaint();
+        PaintPreview paintPreview = findViewById(R.id.paintPreview);
+        paintPreview.repaint();
     }
 
     public void toolOnClickListener() {

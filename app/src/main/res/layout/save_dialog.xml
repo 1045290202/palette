@@ -37,10 +37,33 @@
                 android:theme="@style/EditText" />
 
             <TextView
+                android:id="@+id/file_format_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=".png" />
+                android:text=".png"
+                android:textSize="18dp" />
         </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/file_format_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="png"
+                android:theme="@style/AppTheme" />
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="jpg"
+                android:theme="@style/AppTheme" />
+        </RadioGroup>
 
         <LinearLayout
             android:layout_width="match_parent"
