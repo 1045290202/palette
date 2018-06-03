@@ -2,15 +2,22 @@ package com.sjk.palette;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.sjk.palette.InkPresenter.px2dp;
 
 public class ColorDialog extends PopupWindow {
     private Context context;
@@ -50,6 +57,11 @@ public class ColorDialog extends PopupWindow {
         // 设置弹出窗体显示时的动画，从底部向上弹出
         this.setAnimationStyle(R.style.BottomDialogAnimation);
         onButtonClick();
+
+        ColorPicker colorPicker = view.findViewById(R.id.color_picker);
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) colorPicker.getLayoutParams();
+        layoutParams.height = 1;
+        colorPicker.setLayoutParams(layoutParams);
     }
 
     public void onButtonClick() {

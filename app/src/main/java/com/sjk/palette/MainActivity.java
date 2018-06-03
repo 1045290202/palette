@@ -5,17 +5,21 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
     private static InkPresenter inkPresenter;
     private static MainActivity mainActivity;
+    private ColorDialog colorDialog;
 
     public MainActivity() {
         mainActivity = this;
@@ -82,97 +86,37 @@ public class MainActivity extends Activity {
         });
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    //@SuppressLint("ClickableViewAccessibility")
     private void titleOnTouchListener() {
-        final TextView save = findViewById(R.id.save);
-        save.setOnTouchListener(new View.OnTouchListener() {
+        ImageView save = findViewById(R.id.save);
+        save.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        save.setBackgroundColor(Color.parseColor("#cccccc"));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (isOuterUp(event, v)) {//移出
-                            save.setBackgroundColor(Color.parseColor("#eeeeee"));
-                        } else {//未移出
-                            save.setBackgroundColor(Color.parseColor("#eeeeee"));
-                            createSaveDialog();
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                createSaveDialog();
             }
         });
 
-        final TextView clear = findViewById(R.id.clear);
-        clear.setOnTouchListener(new View.OnTouchListener() {
+        ImageView clear = findViewById(R.id.clear);
+        clear.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        clear.setBackgroundColor(Color.parseColor("#cccccc"));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (isOuterUp(event, v)) {//移出
-                            clear.setBackgroundColor(Color.parseColor("#eeeeee"));
-                        } else {//未移出
-                            inkPresenter.clear();
-                            clear.setBackgroundColor(Color.parseColor("#eeeeee"));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                inkPresenter.clear();
             }
         });
 
-        final TextView revoke = findViewById(R.id.revoke);
-        revoke.setOnTouchListener(new View.OnTouchListener() {
+        ImageView revoke = findViewById(R.id.revoke);
+        revoke.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        revoke.setBackgroundColor(Color.parseColor("#cccccc"));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (isOuterUp(event, v)) {//移出
-                            revoke.setBackgroundColor(Color.parseColor("#eeeeee"));
-                        } else {//未移出
-                            inkPresenter.revoke();
-                            revoke.setBackgroundColor(Color.parseColor("#eeeeee"));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                inkPresenter.revoke();
             }
         });
 
-        final TextView restore = findViewById(R.id.restore);
-        restore.setOnTouchListener(new View.OnTouchListener() {
+        ImageView restore = findViewById(R.id.restore);
+        restore.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        restore.setBackgroundColor(Color.parseColor("#cccccc"));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (isOuterUp(event, v)) {//移出
-                            restore.setBackgroundColor(Color.parseColor("#eeeeee"));
-                        } else {//未移出
-                            inkPresenter.restore();
-                            restore.setBackgroundColor(Color.parseColor("#eeeeee"));
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                inkPresenter.restore();
             }
         });
     }
@@ -245,9 +189,7 @@ public class MainActivity extends Activity {
         strokeColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, ColorDialog.class);
-//                startActivity(intent);
-                ColorDialog colorDialog = new ColorDialog(getApplicationContext());
+                colorDialog = new ColorDialog(getApplicationContext());
                 TextView strokeColorText = findViewById(R.id.strokeColor);
                 colorDialog.setColorEditTextHint(strokeColorText.getText().toString());
                 colorDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -266,5 +208,27 @@ public class MainActivity extends Activity {
         });
     }
 
+    public void dismissColorDialog() {
+        colorDialog.dismiss();
+    }
+
+    private long firstTime = 0;
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+                long secondTime = System.currentTimeMillis();
+                if (secondTime - firstTime > 2000) {
+                    Toast.makeText(MainActivity.this, "再按一次退出哦", Toast.LENGTH_SHORT).show();
+                    firstTime = secondTime;
+                    return true;
+                } else {
+                    finish();
+                }
+                break;
+        }
+        return true;
+    }
 }
 

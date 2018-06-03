@@ -18,6 +18,13 @@
         android:paddingRight="10dp"
         android:paddingTop="10dp">
 
+        <com.sjk.palette.ColorPicker
+            android:id="@+id/color_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

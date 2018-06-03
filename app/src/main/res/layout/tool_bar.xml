@@ -15,9 +15,13 @@
             android:layout_weight="1">
 
             <ImageView
+                android:theme="@style/Widget.AppCompat.Button.Borderless"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
                 android:id="@+id/reduce"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:src="@drawable/reduce" />
 
             <TextView
@@ -29,8 +33,12 @@
                 android:text="3" />
 
             <ImageView
+                android:theme="@style/Widget.AppCompat.Button.Borderless"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
                 android:id="@+id/enlarge"
-                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/enlarge" />
         </LinearLayout>
@@ -46,6 +54,9 @@
             android:layout_weight="1">
 
             <TextView
+                android:theme="@style/Widget.AppCompat.Button.Borderless"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
                 android:id="@+id/strokeColor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

@@ -8,37 +8,37 @@
         android:layout_height="50dp"
         android:background="@color/colorPrimary">
 
-        <TextView
+        <ImageView
             android:id="@+id/save"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="保存" />
+            android:src="@drawable/save"
+            android:theme="@style/Widget.AppCompat.Button.Borderless" />
 
-        <TextView
+        <ImageView
             android:id="@+id/clear"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="清空" />
+            android:src="@drawable/clear"
+            android:theme="@style/Widget.AppCompat.Button.Borderless" />
 
-        <TextView
+        <ImageView
             android:id="@+id/revoke"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="撤销" />
+            android:src="@drawable/revoke"
+            android:theme="@style/Widget.AppCompat.Button.Borderless" />
 
-        <TextView
+        <ImageView
             android:id="@+id/restore"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="还原" />
+            android:src="@drawable/restore"
+            android:theme="@style/Widget.AppCompat.Button.Borderless" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

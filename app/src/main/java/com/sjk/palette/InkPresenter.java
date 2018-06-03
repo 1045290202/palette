@@ -35,7 +35,7 @@ public class InkPresenter extends View {
     private Line line = new Line();
     private ArrayList<Line> lines = new ArrayList<>();
     private ArrayList<Line> restoreLines = new ArrayList<>();
-    private float scale;
+    private static float scale;
     private int widthPixels = 0;
     private int heightPixels = 0;
     private int linesCount = 0;
@@ -104,11 +104,11 @@ public class InkPresenter extends View {
         heightPixels = this.getHeight();
     }
 
-    public int px2dp(float pxValue) {
+    public static int px2dp(float pxValue) {
         return (int) (pxValue / scale + 0.5f);
     }
 
-    public int dp2px(float dpValue) {
+    public static int dp2px(float dpValue) {
         return (int) (dpValue * scale + 0.5f);
     }
 
@@ -178,13 +178,13 @@ public class InkPresenter extends View {
         AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
         alertDialog.setTitle("提示");
         alertDialog.setMessage("此文件已存在，要覆盖它吗？");
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "让我换个文件名", new DialogInterface.OnClickListener() {
+        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "让我再想想", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 MainActivity.getMainActivity().createSaveDialog();
             }
         });
-        alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "算了把它替换吧", new DialogInterface.OnClickListener() {
+        alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "快点替换它", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
