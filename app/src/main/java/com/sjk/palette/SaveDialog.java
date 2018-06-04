@@ -33,6 +33,7 @@ public class SaveDialog extends PopupWindow {
 
     /**
      * 构造函数
+     *
      * @param context
      */
     public SaveDialog(Context context) {
@@ -60,7 +61,7 @@ public class SaveDialog extends PopupWindow {
         this.setBackgroundDrawable(dw);
         this.setAnimationStyle(R.style.BottomDialogAnimation);
         onButtonClick();
-        
+
         RadioGroup fileFormatRadioGroup = view.findViewById(R.id.file_format_radio_group);
         RadioButton radioButton = (RadioButton) fileFormatRadioGroup.getChildAt(0);
         TextView textView = view.findViewById(R.id.file_format_text_view);
