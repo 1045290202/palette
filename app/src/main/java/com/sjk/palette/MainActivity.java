@@ -1,26 +1,39 @@
 package com.sjk.palette;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.PermissionRequest;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 public class MainActivity extends Activity {
     private static InkPresenter inkPresenter;
     private static MainActivity mainActivity;
     private ColorDialog colorDialog;
     private long firstTime = 0;
+    final static int REQUEST_WRITE = 1;
 
     /**
      * 将已在内存中的MainActivity赋值给mainActivity
@@ -31,14 +44,27 @@ public class MainActivity extends Activity {
 
     /**
      * 获取mainActivity
+     *
      * @return
      */
     public static MainActivity getMainActivity() {
         return mainActivity;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_WRITE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+        } else {
+            Toast.makeText(getApplicationContext(), "啊，没有得到存储权限，我死了", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
     /**
      * 活动被创建时调用
+     *
      * @param savedInstanceState
      */
     @Override
@@ -47,6 +73,11 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MainActivity.getMainActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE);
+            }
+        }
         inkPresenter = findViewById(R.id.inkPresenter);
         titleOnTouchListener();
         toolOnClickListener();
@@ -54,6 +85,7 @@ public class MainActivity extends Activity {
 
     /**
      * 获取笔触大小
+     *
      * @return
      */
     public int getStrokeWidthText() {
@@ -63,6 +95,7 @@ public class MainActivity extends Activity {
 
     /**
      * 获取笔触颜色
+     *
      * @return
      */
     public int getStrokeColorText() {
@@ -72,6 +105,7 @@ public class MainActivity extends Activity {
 
     /**
      * 设置笔触颜色
+     *
      * @param str
      */
     public void setStrokeColorText(String str) {
@@ -81,6 +115,7 @@ public class MainActivity extends Activity {
 
     /**
      * 返回画布
+     *
      * @return
      */
     public InkPresenter getInkPresenter() {
@@ -243,6 +278,7 @@ public class MainActivity extends Activity {
 
     /**
      * 添加点击返回键处理，实现双击退出功能
+     *
      * @param keyCode
      * @param event
      * @return

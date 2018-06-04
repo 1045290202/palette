@@ -1,9 +1,13 @@
 package com.sjk.palette;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.CornerPathEffect;
@@ -14,6 +18,9 @@ import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -55,6 +62,7 @@ public class InkPresenter extends View {
 
     /**
      * 构造函数，定义画笔属性
+     *
      * @param context
      * @param attrs
      */
@@ -126,6 +134,7 @@ public class InkPresenter extends View {
 
     /**
      * px转dp
+     *
      * @param pxValue px值
      * @return
      */
@@ -135,6 +144,7 @@ public class InkPresenter extends View {
 
     /**
      * dp转px
+     *
      * @param dpValue dp值
      * @return
      */
@@ -144,6 +154,7 @@ public class InkPresenter extends View {
 
     /**
      * 使保存的图片在立即被媒体扫描，在图库中显示
+     *
      * @param context
      * @param path
      */
@@ -157,7 +168,8 @@ public class InkPresenter extends View {
 
     /**
      * 利用文件流将文件保存到sdcard中
-     * @param fileName 文件名
+     *
+     * @param fileName   文件名
      * @param fileFormat 文件格式
      * @throws IOException
      */
@@ -217,6 +229,7 @@ public class InkPresenter extends View {
 
     /**
      * 将绘制的信息复制到新的画布中，并调用saveBitmap方法
+     *
      * @param fileName
      * @param fileFormat
      */
@@ -238,8 +251,9 @@ public class InkPresenter extends View {
 
     /**
      * 弹出提示框
-     * @param file 文件
-     * @param filePath 文件路径
+     *
+     * @param file       文件
+     * @param filePath   文件路径
      * @param fileFormat 文件后缀名
      */
     public void createAlertDialog(final File file, final String filePath, final String fileFormat) {
@@ -276,6 +290,7 @@ public class InkPresenter extends View {
 
     /**
      * 画出所有的线
+     *
      * @param canvas
      */
     public void drawLines(Canvas canvas) {
@@ -297,6 +312,7 @@ public class InkPresenter extends View {
 
     /**
      * 画布的触摸事件
+     *
      * @param event
      * @return
      */
@@ -344,7 +360,6 @@ public class InkPresenter extends View {
     }
 
     /**
-     *
      * @param canvas
      */
     @Override
