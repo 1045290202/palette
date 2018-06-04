@@ -45,42 +45,19 @@ public class InkPresenter extends View {
     private PaintMode paintMode = PaintMode.ROUND;
     private float preX, preY;
 
+    /**
+     * 新功能
+     * 枚举不同样式的画笔风格
+     */
     enum PaintMode {
         ROUND, SQUARE;
     }
 
-    public void clear() {
-        restoreLinesCount += linesCount;
-        needToRestore = linesCount;
-        lines.clear();
-        linesCount = 0;
-        restoreLines.clear();
-        restoreLinesCount = 0;
-        invalidate();
-    }
-
-    public void revoke() {
-        if (linesCount > 0) {
-            Line line = lines.get(linesCount - 1);
-            restoreLines.add(line);
-            restoreLinesCount++;
-            lines.remove(linesCount - 1);
-            linesCount--;
-            invalidate();
-        }
-    }
-
-    public void restore() {
-        if (restoreLinesCount > 0) {
-            Line line = restoreLines.get(restoreLinesCount - 1);
-            lines.add(line);
-            linesCount++;
-            restoreLines.remove(restoreLinesCount - 1);
-            restoreLinesCount--;
-            invalidate();
-        }
-    }
-
+    /**
+     * 构造函数，定义画笔属性
+     * @param context
+     * @param attrs
+     */
     public InkPresenter(Context context, AttributeSet attrs) {
         super(context, attrs);
         scale = context.getResources().getDisplayMetrics().density;
@@ -92,26 +69,84 @@ public class InkPresenter extends View {
         paint.setDither(true);
     }
 
-    public InkPresenter(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    /**
+     * 清空画板
+     */
+    public void clear() {
+        restoreLinesCount += linesCount;
+        needToRestore = linesCount;
+        lines.clear();
+        linesCount = 0;
+        restoreLines.clear();
+        restoreLinesCount = 0;
+        invalidate();
     }
 
+    /**
+     * 撤销
+     */
+    public void revoke() {
+        if (linesCount > 0) {
+            Line line = lines.get(linesCount - 1);
+            restoreLines.add(line);
+            restoreLinesCount++;
+            lines.remove(linesCount - 1);
+            linesCount--;
+            invalidate();
+        }
+    }
+
+    /**
+     * 还原
+     */
+    public void restore() {
+        if (restoreLinesCount > 0) {
+            Line line = restoreLines.get(restoreLinesCount - 1);
+            lines.add(line);
+            linesCount++;
+            restoreLines.remove(restoreLinesCount - 1);
+            restoreLinesCount--;
+            invalidate();
+        }
+    }
+
+    /**
+     * 获取画布宽度
+     */
     public void getCanvasWidth() {
         widthPixels = this.getWidth();
     }
 
+    /**
+     * 获取画布高度
+     */
     public void getCanvasHeight() {
         heightPixels = this.getHeight();
     }
 
+    /**
+     * px转dp
+     * @param pxValue px值
+     * @return
+     */
     public static int px2dp(float pxValue) {
         return (int) (pxValue / scale + 0.5f);
     }
 
+    /**
+     * dp转px
+     * @param dpValue dp值
+     * @return
+     */
     public static int dp2px(float dpValue) {
         return (int) (dpValue * scale + 0.5f);
     }
 
+    /**
+     * 使保存的图片在立即被媒体扫描，在图库中显示
+     * @param context
+     * @param path
+     */
     public static void galleryAddPic(Context context, String path) {//在图库中显示
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File file = new File(path);
@@ -120,6 +155,12 @@ public class InkPresenter extends View {
         context.sendBroadcast(mediaScanIntent);
     }
 
+    /**
+     * 利用文件流将文件保存到sdcard中
+     * @param fileName 文件名
+     * @param fileFormat 文件格式
+     * @throws IOException
+     */
     public void saveBitmap(String fileName, String fileFormat) throws IOException {
         String folderPath = "/sdcard/Pictures/palette/";
         File folder = new File(folderPath);
@@ -174,6 +215,33 @@ public class InkPresenter extends View {
         }
     }
 
+    /**
+     * 将绘制的信息复制到新的画布中，并调用saveBitmap方法
+     * @param fileName
+     * @param fileFormat
+     */
+    public void save(String fileName, String fileFormat) {
+        getCanvasWidth();
+        getCanvasHeight();
+        cacheBitmap = Bitmap.createBitmap(widthPixels, heightPixels, Bitmap.Config.ARGB_8888);
+        cacheCanvas = new Canvas();
+        cacheCanvas.setBitmap(cacheBitmap);
+        cacheCanvas.drawColor(backgroundColor);
+        drawLines(cacheCanvas);
+        cacheCanvas.drawBitmap(cacheBitmap, 0, 0, paint);
+        try {
+            saveBitmap(fileName, fileFormat);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 弹出提示框
+     * @param file 文件
+     * @param filePath 文件路径
+     * @param fileFormat 文件后缀名
+     */
     public void createAlertDialog(final File file, final String filePath, final String fileFormat) {
         AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
         alertDialog.setTitle("提示");
@@ -206,26 +274,14 @@ public class InkPresenter extends View {
         alertDialog.show();
     }
 
-    public void save(String fileName, String fileFormat) {
-        getCanvasWidth();
-        getCanvasHeight();
-        cacheBitmap = Bitmap.createBitmap(widthPixels, heightPixels, Bitmap.Config.ARGB_8888);
-        cacheCanvas = new Canvas();
-        cacheCanvas.setBitmap(cacheBitmap);
-        cacheCanvas.drawColor(backgroundColor);
-        drawLines(cacheCanvas);
-        cacheCanvas.drawBitmap(cacheBitmap, 0, 0, paint);
-        try {
-            saveBitmap(fileName, fileFormat);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * 画出所有的线
+     * @param canvas
+     */
     public void drawLines(Canvas canvas) {
         int linesSize = lines.size();
         if (linesSize != 0) {
-            for (int j = 0; j < linesSize; j++) {//利用二重循环画出所有的线
+            for (int j = 0; j < linesSize; j++) {
                 Line line = lines.get(j);
                 paint.setStrokeWidth(dp2px((float) line.getWidth()));
                 paint.setColor(line.getColor());
@@ -239,8 +295,13 @@ public class InkPresenter extends View {
         }
     }
 
+    /**
+     * 画布的触摸事件
+     * @param event
+     * @return
+     */
     @Override
-    public boolean onTouchEvent(MotionEvent event) {//触摸事件
+    public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
         switch (event.getAction()) {
@@ -266,7 +327,6 @@ public class InkPresenter extends View {
             case MotionEvent.ACTION_MOVE:
                 if (Math.abs(x - preX) > 0 && Math.abs(y - preY) > 0) {
                     line.getPath().quadTo(preX, preY, (x + preX) / 2, (y + preY) / 2);
-//                line.addPointF(new PointF(event.getX(), event.getY()));
                     lines.set(linesCount - 1, line);
                     preX = x;
                     preY = y;
@@ -279,10 +339,14 @@ public class InkPresenter extends View {
             default:
                 break;
         }
-        invalidate();//重绘
+        invalidate();
         return true;
     }
 
+    /**
+     *
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);

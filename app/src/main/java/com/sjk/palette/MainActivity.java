@@ -20,15 +20,27 @@ public class MainActivity extends Activity {
     private static InkPresenter inkPresenter;
     private static MainActivity mainActivity;
     private ColorDialog colorDialog;
+    private long firstTime = 0;
 
+    /**
+     * 将已在内存中的MainActivity赋值给mainActivity
+     */
     public MainActivity() {
         mainActivity = this;
     }
 
+    /**
+     * 获取mainActivity
+     * @return
+     */
     public static MainActivity getMainActivity() {
         return mainActivity;
     }
 
+    /**
+     * 活动被创建时调用
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,38 +50,46 @@ public class MainActivity extends Activity {
         inkPresenter = findViewById(R.id.inkPresenter);
         titleOnTouchListener();
         toolOnClickListener();
-//        EditText colorEditText=findViewById(R.id.color);
-//        colorEditText.setHint(getStrokeColorText());
     }
 
+    /**
+     * 获取笔触大小
+     * @return
+     */
     public int getStrokeWidthText() {
         TextView strokeWidthText = findViewById(R.id.strokeWidth);
         return Integer.parseInt(strokeWidthText.getText().toString());
     }
 
+    /**
+     * 获取笔触颜色
+     * @return
+     */
     public int getStrokeColorText() {
         TextView strokeColorText = findViewById(R.id.strokeColor);
         return Color.parseColor(strokeColorText.getText().toString());
     }
 
+    /**
+     * 设置笔触颜色
+     * @param str
+     */
     public void setStrokeColorText(String str) {
         TextView textView = findViewById(R.id.strokeColor);
         textView.setText(str);
     }
 
-    private boolean isOuterUp(MotionEvent event, View v) {
-        float touchX = event.getX();
-        float touchY = event.getY();
-        float maxX = v.getWidth();
-        float maxY = v.getHeight();
-
-        return touchX < 0 || touchX > maxX || touchY < 0 || touchY > maxY;
-    }
-
+    /**
+     * 返回画布
+     * @return
+     */
     public InkPresenter getInkPresenter() {
         return inkPresenter;
     }
 
+    /**
+     * 弹出保存提示框
+     */
     public void createSaveDialog() {
         SaveDialog saveDialog = new SaveDialog(getApplicationContext());
         saveDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -86,7 +106,9 @@ public class MainActivity extends Activity {
         });
     }
 
-    //@SuppressLint("ClickableViewAccessibility")
+    /**
+     * title的点击事件
+     */
     private void titleOnTouchListener() {
         ImageView save = findViewById(R.id.save);
         save.setOnClickListener(new View.OnClickListener() {
@@ -121,11 +143,17 @@ public class MainActivity extends Activity {
         });
     }
 
+    /**
+     * 调用画笔预览的repaint方法
+     */
     public void repaintSizePreview() {
         PaintPreview paintPreview = findViewById(R.id.paintPreview);
         paintPreview.repaint();
     }
 
+    /**
+     * 创建toolBar的点击事件
+     */
     public void toolOnClickListener() {
         ImageView reduce = findViewById(R.id.reduce);
         reduce.setOnClickListener(new View.OnClickListener() {
@@ -182,9 +210,7 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
-        /**
-         * 弹出颜色选取框
-         */
+
         TextView strokeColor = findViewById(R.id.strokeColor);
         strokeColor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,12 +234,19 @@ public class MainActivity extends Activity {
         });
     }
 
+    /**
+     * 隐藏颜色选取面板弹出框
+     */
     public void dismissColorDialog() {
         colorDialog.dismiss();
     }
 
-    private long firstTime = 0;
-
+    /**
+     * 添加点击返回键处理，实现双击退出功能
+     * @param keyCode
+     * @param event
+     * @return
+     */
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {

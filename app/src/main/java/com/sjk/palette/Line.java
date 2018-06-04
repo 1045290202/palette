@@ -6,9 +6,11 @@ import android.graphics.PointF;
 
 import java.util.ArrayList;
 
+/**
+ * Line类包含路径、笔画粗细、颜色、笔触样式（新功能）
+ */
 public class Line {
     private Path path;
-    private ArrayList<PointF> line = new ArrayList<>();
     private int width = 3;
     private int color = Color.BLACK;
     private InkPresenter.PaintMode paintMode = InkPresenter.PaintMode.ROUND;
@@ -37,24 +39,12 @@ public class Line {
         return color;
     }
 
-    public void addPointF(PointF pointF) {//往line中添加触摸点
-        line.add(pointF);
-    }
-
     public void setWidth(int width) {
         this.width = width;
     }
 
     public int getWidth() {
         return width;
-    }
-
-    public int getLineSize() {
-        return line.size();
-    }
-
-    public PointF getPointF(int index) {
-        return line.get(index);
     }
 
 }
