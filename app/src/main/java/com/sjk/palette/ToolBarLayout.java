@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 public class ToolBarLayout extends LinearLayout {
     /**
      * 构造函数
+     *
      * @param context
      * @param attrs
      */

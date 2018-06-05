@@ -23,7 +23,8 @@ public class ColorPicker extends InkPresenter {
     private List<ColorPickerPoint> points = new ArrayList<>();
 
     /**
-     *构造函数，设置画笔属性
+     * 构造函数，设置画笔属性
+     *
      * @param context
      * @param attrs
      */
@@ -39,6 +40,7 @@ public class ColorPicker extends InkPresenter {
 
     /**
      * 重写Canvas类的onDraw方法，画出不同色点的位置
+     *
      * @param canvas
      */
     @SuppressLint("DrawAllocation")
@@ -93,6 +95,7 @@ public class ColorPicker extends InkPresenter {
 
     /**
      * 为此类添加触摸事件,调用MainActivity的方法
+     *
      * @param event
      * @return
      */
@@ -115,6 +118,7 @@ public class ColorPicker extends InkPresenter {
 
     /**
      * 设置此Canvas的高度
+     *
      * @param height 高度
      */
     public void setColorPickerHeight(int height) {
@@ -130,10 +134,11 @@ public class ColorPicker extends InkPresenter {
 
         /**
          * 构造函数
-         * @param color 颜色字符串，以"#"开头的包含透明度的16进制字符串
-         * @param left 单个色点左边位置
-         * @param right 单个色点右边位置
-         * @param top 单个色顶部位置
+         *
+         * @param color  颜色字符串，以"#"开头的包含透明度的16进制字符串
+         * @param left   单个色点左边位置
+         * @param right  单个色点右边位置
+         * @param top    单个色顶部位置
          * @param bottom 单个色点左边位置
          */
         public ColorPickerPoint(String color, int left, int right, int bottom, int top) {
@@ -146,6 +151,7 @@ public class ColorPicker extends InkPresenter {
 
         /**
          * 判断触摸点是否在色点内，false表示不在点内，true表示在点内
+         *
          * @param x 触摸点x坐标
          * @param y 触摸点y坐标
          * @return
@@ -160,6 +166,7 @@ public class ColorPicker extends InkPresenter {
 
         /**
          * 返回色值字符串
+         *
          * @return
          */
         public String getColor() {

@@ -10,6 +10,7 @@ public class PaintPreview extends InkPresenter {
 
     /**
      * 构造函数，定义画笔的属性
+     *
      * @param context
      * @param attrs
      */
@@ -23,6 +24,7 @@ public class PaintPreview extends InkPresenter {
 
     /**
      * 重写onDraw方法
+     *
      * @param canvas
      */
     @Override

@@ -51,6 +51,13 @@ public class MainActivity extends Activity {
         return mainActivity;
     }
 
+    /**
+     * 重写权限申请的回调函数
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

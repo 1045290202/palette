@@ -19,6 +19,7 @@ public class ColorDialog extends PopupWindow {
 
     /**
      * 构造函数
+     *
      * @param context
      */
     public ColorDialog(Context context) {
@@ -94,6 +95,7 @@ public class ColorDialog extends PopupWindow {
 
     /**
      * 将文本框的hint改成activity_main中的色值，由MainActivity调用
+     *
      * @param str 传入的字符串
      */
     public void setColorEditTextHint(String str) {
