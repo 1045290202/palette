@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -51,6 +52,8 @@ public class InkPresenter extends View {
     private int backgroundColor = 0xFFFAFAFA;
     private PaintMode paintMode = PaintMode.ROUND;
     private float preX, preY;
+    private static String strokeColor = "#FF000000";
+    private static int strokeWidth = 5;
 
     /**
      * 新功能
@@ -75,6 +78,22 @@ public class InkPresenter extends View {
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStyle(Paint.Style.STROKE);
         paint.setDither(true);
+    }
+
+    public static void setStrokeColor(String strokeColor) {
+        InkPresenter.strokeColor = strokeColor;
+    }
+
+    public static String getStrokeColor() {
+        return strokeColor;
+    }
+
+    public static void setStrokeWidth(int strokeWidth) {
+        InkPresenter.strokeWidth = strokeWidth;
+    }
+
+    public static int getStrokeWidth() {
+        return strokeWidth;
     }
 
     /**
@@ -158,7 +177,7 @@ public class InkPresenter extends View {
      * @param context
      * @param path
      */
-    public static void galleryAddPic(Context context, String path) {//在图库中显示
+    public static void galleryAddPic(Context context, String path) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File file = new File(path);
         Uri contentUri = Uri.fromFile(file);
@@ -323,8 +342,8 @@ public class InkPresenter extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 path.moveTo(x, y);
-                line.setWidth(MainActivity.getMainActivity().getStrokeWidthText());
-                line.setColor(MainActivity.getMainActivity().getStrokeColorText());
+                line.setWidth(strokeWidth);
+                line.setColor(Color.parseColor(strokeColor));
                 if (paintMode == PaintMode.ROUND) {
                     line.setPaintMode(PaintMode.ROUND);
                 } else if (paintMode == PaintMode.SQUARE) {
@@ -365,7 +384,7 @@ public class InkPresenter extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawColor(backgroundColor);
+        //canvas.drawColor(backgroundColor);
         drawLines(canvas);
     }
 

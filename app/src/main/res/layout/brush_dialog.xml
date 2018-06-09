@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/color_dialog"
+    android:id="@+id/brush_dialog"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="10dp"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:paddingRight="10dp"
+    android:theme="@style/AppTheme">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,34 +17,36 @@
         android:paddingRight="10dp"
         android:paddingTop="10dp">
 
-        <com.sjk.palette.ColorPicker
-            android:id="@+id/color_picker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_weight="1" />
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="色值（支持HEX色值，支持透明度）"
+            android:text="移动滑动条改变笔触大小"
             android:textColor="#ffaaaaaa" />
 
-        <EditText
-            android:id="@+id/color"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLength="9"
-            android:singleLine="true"
-            android:textCursorDrawable="@drawable/cursor_color"
-            android:theme="@style/EditText" />
+            android:gravity="center_vertical">
+
+            <com.sjk.palette.PaintPreview
+                android:id="@+id/paint_preview"
+                android:layout_width="50dp"
+                android:layout_height="50dp" />
+
+            <SeekBar
+                android:id="@+id/stroke_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="39"
+                android:progress="5" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/color_dialog_cancel"
+                android:id="@+id/brush_dialog_cancel"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -51,7 +54,7 @@
                 android:text="取消" />
 
             <Button
-                android:id="@+id/color_dialog_ok"
+                android:id="@+id/brush_dialog_ok"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

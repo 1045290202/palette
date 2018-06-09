@@ -106,9 +106,9 @@ public class ColorPicker extends InkPresenter {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             for (ColorPickerPoint colorPickerPoint : points) {
                 if (colorPickerPoint.inPoint(px2dp(x), px2dp(y))) {
-                    MainActivity.getMainActivity().setStrokeColorText(colorPickerPoint.getColor().replace("#", "#FF"));
+                    MainActivity.getMainActivity().setStrokeColor(colorPickerPoint.getColor().replace("#", "#FF"));
                     MainActivity.getMainActivity().dismissColorDialog();
-                    MainActivity.getMainActivity().repaintSizePreview();
+                    MainActivity.getMainActivity().imageHint(R.drawable.circle, colorPickerPoint.getColor().replace("#", "#FF"));
                     break;
                 }
             }

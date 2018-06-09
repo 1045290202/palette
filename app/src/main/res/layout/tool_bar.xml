@@ -9,61 +9,21 @@
         android:layout_height="50dp"
         android:background="@color/colorPrimary">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/brush"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:src="@drawable/brush"
+            android:theme="@style/Widget.AppCompat.Button.Borderless" />
 
-            <ImageView
-                android:theme="@style/Widget.AppCompat.Button.Borderless"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:id="@+id/reduce"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/reduce" />
-
-            <TextView
-                android:id="@+id/strokeWidth"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="3" />
-
-            <ImageView
-                android:theme="@style/Widget.AppCompat.Button.Borderless"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:id="@+id/enlarge"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/enlarge" />
-        </LinearLayout>
-
-        <com.sjk.palette.PaintPreview
-            android:id="@+id/paintPreview"
-            android:layout_width="50dp"
-            android:layout_height="match_parent" />
-
-        <LinearLayout
+        <ImageView
+            android:id="@+id/circle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:theme="@style/Widget.AppCompat.Button.Borderless"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:id="@+id/strokeColor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="#FF000000" />
-        </LinearLayout>
-
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:src="@drawable/circle"
+            android:theme="@style/Widget.AppCompat.Button.Borderless" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

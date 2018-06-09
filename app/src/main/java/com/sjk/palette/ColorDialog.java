@@ -67,16 +67,20 @@ public class ColorDialog extends PopupWindow {
                 String colorValue = editText.getText().toString();
                 colorValue = colorValue.toUpperCase();
                 if (colorValue.matches("^#([0-9A-F]{8})$")) {
-                    MainActivity.getMainActivity().setStrokeColorText(colorValue);
+                    MainActivity.getMainActivity().setStrokeColor(colorValue);
+                    MainActivity.getMainActivity().imageHint(R.drawable.circle, colorValue);
                     dismiss();
                 } else if (colorValue.matches("^([0-9A-F]{8})$")) {
-                    MainActivity.getMainActivity().setStrokeColorText("#" + colorValue);
+                    MainActivity.getMainActivity().setStrokeColor("#" + colorValue);
+                    MainActivity.getMainActivity().imageHint(R.drawable.circle, "#" + colorValue);
                     dismiss();
                 } else if (colorValue.matches("^#([0-9A-F]{6})$")) {
-                    MainActivity.getMainActivity().setStrokeColorText(colorValue.replace("#", "#FF"));
+                    MainActivity.getMainActivity().setStrokeColor(colorValue.replace("#", "#FF"));
+                    MainActivity.getMainActivity().imageHint(R.drawable.circle, colorValue.replace("#", "#FF"));
                     dismiss();
                 } else if (colorValue.matches("^([0-9A-F]{6})$")) {
-                    MainActivity.getMainActivity().setStrokeColorText("#FF" + colorValue);
+                    MainActivity.getMainActivity().setStrokeColor("#FF" + colorValue);
+                    MainActivity.getMainActivity().imageHint(R.drawable.circle, "#FF" + colorValue);
                     dismiss();
                 } else {
                     Toast.makeText(context, "哎呀色值输入错误了呢，快重新输入吧！", Toast.LENGTH_SHORT).show();

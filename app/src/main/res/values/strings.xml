@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">画板</string>
+    <string name="developer">\@大神sjk</string>
+    <string name="open_source">https://github.com/1045290202/palette</string>
 </resources>

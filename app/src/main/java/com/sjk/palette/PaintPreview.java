@@ -2,6 +2,7 @@ package com.sjk.palette;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
@@ -20,6 +21,8 @@ public class PaintPreview extends InkPresenter {
         paint.setAntiAlias(true);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setColor(Color.parseColor("#FF000000"));
+        paint.setStrokeWidth(dp2px(PaintPreview.getStrokeWidth()));
     }
 
     /**
@@ -29,15 +32,14 @@ public class PaintPreview extends InkPresenter {
      */
     @Override
     public void onDraw(Canvas canvas) {
-        paint.setStrokeWidth(dp2px(MainActivity.getMainActivity().getStrokeWidthText()));
-        paint.setColor(MainActivity.getMainActivity().getStrokeColorText());
         canvas.drawPoint(canvas.getWidth() / 2, canvas.getHeight() / 2, paint);
     }
 
     /**
      * 重绘
      */
-    public void repaint() {
+    public void repaint(int progress) {
+        paint.setStrokeWidth(dp2px(progress));
         invalidate();
     }
 }

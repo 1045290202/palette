@@ -8,10 +8,12 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -32,6 +34,8 @@ public class MainActivity extends Activity {
     private static InkPresenter inkPresenter;
     private static MainActivity mainActivity;
     private ColorDialog colorDialog;
+    private BrushDialog brushDialog;
+    private MenuDialog menuDialog;
     private long firstTime = 0;
     final static int REQUEST_WRITE = 1;
 
@@ -88,6 +92,21 @@ public class MainActivity extends Activity {
         inkPresenter = findViewById(R.id.inkPresenter);
         titleOnTouchListener();
         toolOnClickListener();
+        imageHint(R.drawable.circle, InkPresenter.getStrokeColor());
+    }
+
+    /**
+     * 图片着色并应用
+     *
+     * @param drawableID 图片的ID
+     * @param color      色值字符串
+     */
+    public void imageHint(int drawableID, String color) {
+        Drawable originBitmapDrawable = ContextCompat.getDrawable(this, drawableID);
+        Drawable wrappedDrawable = DrawableCompat.wrap(originBitmapDrawable);
+        DrawableCompat.setTint(wrappedDrawable, Color.parseColor(color));
+        ImageView imageView = findViewById(R.id.circle);
+        imageView.setImageDrawable(wrappedDrawable);
     }
 
     /**
@@ -95,9 +114,19 @@ public class MainActivity extends Activity {
      *
      * @return
      */
-    public int getStrokeWidthText() {
-        TextView strokeWidthText = findViewById(R.id.strokeWidth);
-        return Integer.parseInt(strokeWidthText.getText().toString());
+    public int getStrokeWidth() {
+//        TextView strokeWidthText = findViewById(R.id.strokeWidth);
+//        return Integer.parseInt(strokeWidthText.getText().toString());
+        return InkPresenter.getStrokeWidth();
+    }
+
+    /**
+     * 设置笔触大小
+     *
+     * @param strokeWidth
+     */
+    public void setStrokeWidth(int strokeWidth) {
+        InkPresenter.setStrokeWidth(strokeWidth);
     }
 
     /**
@@ -105,9 +134,10 @@ public class MainActivity extends Activity {
      *
      * @return
      */
-    public int getStrokeColorText() {
-        TextView strokeColorText = findViewById(R.id.strokeColor);
-        return Color.parseColor(strokeColorText.getText().toString());
+    public int getStrokeColor() {
+//        TextView strokeColorText = findViewById(R.id.strokeColor);
+//        return Color.parseColor(strokeColorText.getText().toString());
+        return Color.parseColor(InkPresenter.getStrokeColor());
     }
 
     /**
@@ -115,9 +145,10 @@ public class MainActivity extends Activity {
      *
      * @param str
      */
-    public void setStrokeColorText(String str) {
-        TextView textView = findViewById(R.id.strokeColor);
-        textView.setText(str);
+    public void setStrokeColor(String str) {
+//        TextView textView = findViewById(R.id.strokeColor);
+//        textView.setText(str);
+        InkPresenter.setStrokeColor(str);
     }
 
     /**
@@ -139,6 +170,22 @@ public class MainActivity extends Activity {
         params[0].alpha = 0.7f;
         getWindow().setAttributes(params[0]);
         saveDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                params[0] = getWindow().getAttributes();
+                params[0].alpha = 1f;
+                getWindow().setAttributes(params[0]);
+            }
+        });
+    }
+
+    public void createMenuDialog() {
+        menuDialog = new MenuDialog(getApplicationContext());
+        menuDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
+        params[0].alpha = 0.7f;
+        getWindow().setAttributes(params[0]);
+        menuDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 params[0] = getWindow().getAttributes();
@@ -183,83 +230,47 @@ public class MainActivity extends Activity {
                 inkPresenter.restore();
             }
         });
-    }
 
-    /**
-     * 调用画笔预览的repaint方法
-     */
-    public void repaintSizePreview() {
-        PaintPreview paintPreview = findViewById(R.id.paintPreview);
-        paintPreview.repaint();
+        ImageView menu = findViewById(R.id.menu);
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createMenuDialog();
+            }
+        });
     }
 
     /**
      * 创建toolBar的点击事件
      */
     public void toolOnClickListener() {
-        ImageView reduce = findViewById(R.id.reduce);
-        reduce.setOnClickListener(new View.OnClickListener() {
+        ImageView brush = findViewById(R.id.brush);
+        brush.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView strokeWidth = findViewById(R.id.strokeWidth);
-                int width = getStrokeWidthText();
-                if (width > 1) {
-                    strokeWidth.setText("" + (width - 1));
-                    repaintSizePreview();
-                }
-            }
-        });
-        reduce.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                TextView strokeWidth = findViewById(R.id.strokeWidth);
-                int width = getStrokeWidthText();
-                if (width > 5) {
-                    strokeWidth.setText("" + (width - 5));
-                    repaintSizePreview();
-                } else if (width > 1 && width <= 5) {
-                    strokeWidth.setText("1");
-                    repaintSizePreview();
-                }
-                return true;
+                brushDialog = new BrushDialog(getApplicationContext());
+                brushDialog.init();
+                brushDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+                final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
+                params[0].alpha = 0.7f;
+                getWindow().setAttributes(params[0]);
+                brushDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        params[0] = getWindow().getAttributes();
+                        params[0].alpha = 1f;
+                        getWindow().setAttributes(params[0]);
+                    }
+                });
             }
         });
 
-        ImageView enlarge = findViewById(R.id.enlarge);
-        enlarge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextView strokeWidth = findViewById(R.id.strokeWidth);
-                int width = getStrokeWidthText();
-                if (width < 40) {
-                    strokeWidth.setText("" + (width + 1));
-                    repaintSizePreview();
-                }
-            }
-        });
-        enlarge.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                TextView strokeWidth = findViewById(R.id.strokeWidth);
-                int width = getStrokeWidthText();
-                if (width < 35) {
-                    strokeWidth.setText("" + (width + 5));
-                    repaintSizePreview();
-                } else if (width >= 35 && width < 40) {
-                    strokeWidth.setText("40");
-                    repaintSizePreview();
-                }
-                return true;
-            }
-        });
-
-        TextView strokeColor = findViewById(R.id.strokeColor);
-        strokeColor.setOnClickListener(new View.OnClickListener() {
+        ImageView circle = findViewById(R.id.circle);
+        circle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 colorDialog = new ColorDialog(getApplicationContext());
-                TextView strokeColorText = findViewById(R.id.strokeColor);
-                colorDialog.setColorEditTextHint(strokeColorText.getText().toString());
+                colorDialog.setColorEditTextHint(InkPresenter.getStrokeColor());
                 colorDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
                 final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
                 params[0].alpha = 0.7f;
@@ -281,6 +292,10 @@ public class MainActivity extends Activity {
      */
     public void dismissColorDialog() {
         colorDialog.dismiss();
+    }
+
+    public void dismissMenuDialog() {
+        menuDialog.dismiss();
     }
 
     /**
