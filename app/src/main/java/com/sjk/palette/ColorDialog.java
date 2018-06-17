@@ -1,7 +1,9 @@
 package com.sjk.palette;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,7 +15,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-public class ColorDialog extends PopupWindow {
+public class ColorDialog extends CustomDialog {
     private Context context;
     private View view;
 
@@ -23,13 +25,29 @@ public class ColorDialog extends PopupWindow {
      * @param context
      */
     public ColorDialog(Context context) {
+        dialogInit(context);
+
+        onButtonClick();
+
+        ColorPicker colorPicker = view.findViewById(R.id.color_picker);
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) colorPicker.getLayoutParams();
+        layoutParams.height = 1;
+        colorPicker.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * 初始化
+     *
+     * @param context
+     */
+    public void dialogInit(Context context) {
         setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         this.view = LayoutInflater.from(context).inflate(R.layout.color_dialog, null);
         this.context = context;
-        this.setOutsideTouchable(true);
+        setOutsideTouchable(true);
         this.view.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                int height = view.findViewById(R.id.color_dialog).getTop();
+                int height = v.findViewById(R.id.color_dialog).getTop();
                 int y = (int) event.getY();
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (y < height) {
@@ -39,20 +57,13 @@ public class ColorDialog extends PopupWindow {
                 return true;
             }
         });
-        this.setContentView(this.view);
-        this.setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
-        this.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
-        this.setFocusable(true);
+        setContentView(this.view);
+        setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
+        setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
+        setFocusable(true);
         ColorDrawable dw = new ColorDrawable(0x00000000);
-        this.setBackgroundDrawable(dw);
-        this.setAnimationStyle(R.style.BottomDialogAnimation);
-
-        onButtonClick();
-
-        ColorPicker colorPicker = view.findViewById(R.id.color_picker);
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) colorPicker.getLayoutParams();
-        layoutParams.height = 1;
-        colorPicker.setLayoutParams(layoutParams);
+        setBackgroundDrawable(dw);
+        setAnimationStyle(R.style.BottomDialogAnimation);
     }
 
     /**
@@ -66,25 +77,49 @@ public class ColorDialog extends PopupWindow {
                 EditText editText = view.findViewById(R.id.color);
                 String colorValue = editText.getText().toString();
                 colorValue = colorValue.toUpperCase();
+                boolean isMatches = false;
                 if (colorValue.matches("^#([0-9A-F]{8})$")) {
-                    MainActivity.getMainActivity().setStrokeColor(colorValue);
-                    MainActivity.getMainActivity().imageHint(R.drawable.circle, colorValue);
-                    dismiss();
+                    isMatches = true;
                 } else if (colorValue.matches("^([0-9A-F]{8})$")) {
-                    MainActivity.getMainActivity().setStrokeColor("#" + colorValue);
-                    MainActivity.getMainActivity().imageHint(R.drawable.circle, "#" + colorValue);
-                    dismiss();
+                    colorValue = "#" + colorValue;
+                    isMatches = true;
                 } else if (colorValue.matches("^#([0-9A-F]{6})$")) {
-                    MainActivity.getMainActivity().setStrokeColor(colorValue.replace("#", "#FF"));
-                    MainActivity.getMainActivity().imageHint(R.drawable.circle, colorValue.replace("#", "#FF"));
-                    dismiss();
+                    colorValue = colorValue.replace("#", "#FF");
+                    isMatches = true;
                 } else if (colorValue.matches("^([0-9A-F]{6})$")) {
-                    MainActivity.getMainActivity().setStrokeColor("#FF" + colorValue);
-                    MainActivity.getMainActivity().imageHint(R.drawable.circle, "#FF" + colorValue);
-                    dismiss();
+                    colorValue = "#FF" + colorValue;
+                    isMatches = true;
                 } else {
                     Toast.makeText(context, "哎呀色值输入错误了呢，快重新输入吧！", Toast.LENGTH_SHORT).show();
                 }
+                if (isMatches) {
+                    MainActivity.getMainActivity().setStrokeColor(colorValue);
+                    MainActivity.getMainActivity().imageHint(R.drawable.circle, colorValue);
+                    delayAndDismiss(delayMills);
+                }
+            }
+        });
+        ok.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                EditText editText = view.findViewById(R.id.color);
+                String colorValue = editText.getText().toString();
+                colorValue = colorValue.toUpperCase();
+                boolean isMatches = false;
+                if (colorValue.matches("^#([0-9A-F]{6})$")) {
+                    isMatches = true;
+                } else if (colorValue.matches("^([0-9A-F]{6})$")) {
+                    isMatches = true;
+                    colorValue = "#" + colorValue;
+                } else {
+                    Toast.makeText(context, "哎呀色值输入错误了呢，快重新输入吧！", Toast.LENGTH_SHORT).show();
+                }
+                if (isMatches) {
+                    InkPresenter.setBgColor(Color.parseColor(colorValue));
+                    Toast.makeText(context, "画板背景色设置成功", Toast.LENGTH_SHORT).show();
+                    dismiss();
+                }
+                return true;
             }
         });
 
@@ -92,7 +127,7 @@ public class ColorDialog extends PopupWindow {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
+                delayAndDismiss(delayMills);
             }
         });
     }

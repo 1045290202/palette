@@ -16,17 +16,24 @@
         android:paddingRight="10dp"
         android:paddingTop="10dp">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="单击色块设置前景色，长按色块设置背景色"
+            android:textColor="#ffaaaaaa" />
+
         <com.sjk.palette.ColorPicker
             android:id="@+id/color_picker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="色值（支持HEX色值，支持透明度）"
+            android:text="单击“确定”设置前景色（支持HEX色值，支持透明度），长按“确定”设置背景色（不支持透明度）"
             android:textColor="#ffaaaaaa" />
 
         <EditText

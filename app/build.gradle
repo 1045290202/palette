@@ -6,8 +6,8 @@ android {
         applicationId "com.sjk.palette"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 3
-        versionName "2018.06.09.01"
+        versionCode 4
+        versionName "2018.06.17.01"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

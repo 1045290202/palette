@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SaveDialog extends PopupWindow {
+public class SaveDialog extends CustomDialog {
     private Context context;
     private View view;
     private InkPresenter inkPresenter;
@@ -37,29 +37,8 @@ public class SaveDialog extends PopupWindow {
      * @param context
      */
     public SaveDialog(Context context) {
-        setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        this.view = LayoutInflater.from(context).inflate(R.layout.save_dialog, null);
-        this.context = context;
-        this.setOutsideTouchable(true);
-        this.view.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                int height = view.findViewById(R.id.save_dialog).getTop();
-                int y = (int) event.getY();
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (y < height) {
-                        dismiss();
-                    }
-                }
-                return true;
-            }
-        });
-        this.setContentView(this.view);
-        this.setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
-        this.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
-        this.setFocusable(true);
-        ColorDrawable dw = new ColorDrawable(0x00000000);
-        this.setBackgroundDrawable(dw);
-        this.setAnimationStyle(R.style.BottomDialogAnimation);
+        dialogInit(context);
+
         onButtonClick();
 
         RadioGroup fileFormatRadioGroup = view.findViewById(R.id.file_format_radio_group);
@@ -106,7 +85,7 @@ public class SaveDialog extends PopupWindow {
                     if (judgeFlag == true) {
                         inkPresenter = MainActivity.getMainActivity().getInkPresenter();
                         inkPresenter.save(fileName, fileFormat);
-                        dismiss();
+                        delayAndDismiss(delayMills);
                     } else {
                         Toast.makeText(context, "文件名可能输错了呢", Toast.LENGTH_SHORT).show();
                     }
@@ -120,9 +99,35 @@ public class SaveDialog extends PopupWindow {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
+                delayAndDismiss(delayMills);
             }
         });
     }
 
+    @Override
+    public void dialogInit(Context context) {
+        setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        this.view = LayoutInflater.from(context).inflate(R.layout.save_dialog, null);
+        this.context = context;
+        setOutsideTouchable(true);
+        this.view.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                int height = v.findViewById(R.id.save_dialog).getTop();
+                int y = (int) event.getY();
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (y < height) {
+                        dismiss();
+                    }
+                }
+                return true;
+            }
+        });
+        setContentView(this.view);
+        setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
+        setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
+        setFocusable(true);
+        ColorDrawable dw = new ColorDrawable(0x00000000);
+        setBackgroundDrawable(dw);
+        setAnimationStyle(R.style.BottomDialogAnimation);
+    }
 }

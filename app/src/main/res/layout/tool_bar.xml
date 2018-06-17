@@ -17,13 +17,27 @@
             android:src="@drawable/brush"
             android:theme="@style/Widget.AppCompat.Button.Borderless" />
 
-        <ImageView
-            android:id="@+id/circle"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="8dp"
-            android:src="@drawable/circle"
-            android:theme="@style/Widget.AppCompat.Button.Borderless" />
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="5dp"
+                android:src="@drawable/circle"
+                android:theme="@style/Widget.AppCompat.Button.Borderless" />
+
+            <ImageView
+                android:id="@+id/circle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:src="@drawable/circle"
+                android:theme="@style/Widget.AppCompat.Button.Borderless" />
+        </FrameLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -11,46 +11,24 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
-public class BrushDialog extends PopupWindow {
-    View view;
-    Context context;
-    SeekBar strokeWidthSeekBar;
-    PaintPreview paintPreview;
+public class BrushDialog extends CustomDialog {
+    private View view;
+    private Context context;
+    private SeekBar strokeWidthSeekBar;
+    private PaintPreview paintPreview;
     private static int strokeWidth;
 
     public BrushDialog(Context context) {
-        setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        this.view = LayoutInflater.from(context).inflate(R.layout.brush_dialog, null);
-        this.context = context;
-        this.setOutsideTouchable(true);
-        this.view.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                int height = view.findViewById(R.id.brush_dialog).getTop();
-                int y = (int) event.getY();
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (y < height) {
-                        dismiss();
-                    }
-                }
-                return true;
-            }
-        });
-        this.setContentView(this.view);
-        this.setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
-        this.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
-        this.setFocusable(true);
-        ColorDrawable dw = new ColorDrawable(0x00000000);
-        this.setBackgroundDrawable(dw);
-        this.setAnimationStyle(R.style.BottomDialogAnimation);
-        paintPreview = view.findViewById(R.id.paint_preview);
+        dialogInit(context);
 
+        paintPreview = view.findViewById(R.id.paint_preview);
         strokeWidth = MainActivity.getMainActivity().getStrokeWidth();
 
         strokeWidthSeekBar = view.findViewById(R.id.stroke_width);
+        strokeWidthSeekBar.setProgress(strokeWidth - 1);
         strokeWidthSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //MainActivity.getMainActivity().setStrokeWidth(progress);
                 strokeWidth = progress + 1;
                 paintPreview.repaint(strokeWidth);
             }
@@ -71,7 +49,7 @@ public class BrushDialog extends PopupWindow {
             @Override
             public void onClick(View v) {
                 MainActivity.getMainActivity().setStrokeWidth(strokeWidth);
-                dismiss();
+                delayAndDismiss(delayMills);
             }
         });
 
@@ -79,7 +57,7 @@ public class BrushDialog extends PopupWindow {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
+                delayAndDismiss(delayMills);
             }
         });
 
@@ -94,7 +72,34 @@ public class BrushDialog extends PopupWindow {
         });
     }
 
-    public void init() {
-        strokeWidthSeekBar.setProgress(MainActivity.getMainActivity().getStrokeWidth() - 1);
+    /**
+     * 初始化
+     *
+     * @param context
+     */
+    public void dialogInit(Context context) {
+        setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        this.view = LayoutInflater.from(context).inflate(R.layout.brush_dialog, null);
+        this.context = context;
+        setOutsideTouchable(true);
+        this.view.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                int height = v.findViewById(R.id.brush_dialog).getTop();
+                int y = (int) event.getY();
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (y < height) {
+                        dismiss();
+                    }
+                }
+                return true;
+            }
+        });
+        setContentView(this.view);
+        setHeight(RelativeLayout.LayoutParams.WRAP_CONTENT);
+        setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
+        setFocusable(true);
+        ColorDrawable dw = new ColorDrawable(0x00000000);
+        setBackgroundDrawable(dw);
+        setAnimationStyle(R.style.BottomDialogAnimation);
     }
 }

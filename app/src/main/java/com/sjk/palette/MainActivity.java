@@ -5,12 +5,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -33,11 +35,13 @@ import java.io.IOException;
 public class MainActivity extends Activity {
     private static InkPresenter inkPresenter;
     private static MainActivity mainActivity;
+    private SaveDialog saveDialog;
     private ColorDialog colorDialog;
     private BrushDialog brushDialog;
     private MenuDialog menuDialog;
     private long firstTime = 0;
     final static int REQUEST_WRITE = 1;
+    private Context context;
 
     /**
      * 将已在内存中的MainActivity赋值给mainActivity
@@ -74,13 +78,14 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 活动被创建时调用
+     * 活动被创建时调用,并判断是否拥有储存权限
      *
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = getApplicationContext();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
@@ -115,8 +120,6 @@ public class MainActivity extends Activity {
      * @return
      */
     public int getStrokeWidth() {
-//        TextView strokeWidthText = findViewById(R.id.strokeWidth);
-//        return Integer.parseInt(strokeWidthText.getText().toString());
         return InkPresenter.getStrokeWidth();
     }
 
@@ -135,8 +138,6 @@ public class MainActivity extends Activity {
      * @return
      */
     public int getStrokeColor() {
-//        TextView strokeColorText = findViewById(R.id.strokeColor);
-//        return Color.parseColor(strokeColorText.getText().toString());
         return Color.parseColor(InkPresenter.getStrokeColor());
     }
 
@@ -146,8 +147,6 @@ public class MainActivity extends Activity {
      * @param str
      */
     public void setStrokeColor(String str) {
-//        TextView textView = findViewById(R.id.strokeColor);
-//        textView.setText(str);
         InkPresenter.setStrokeColor(str);
     }
 
@@ -164,35 +163,8 @@ public class MainActivity extends Activity {
      * 弹出保存提示框
      */
     public void createSaveDialog() {
-        SaveDialog saveDialog = new SaveDialog(getApplicationContext());
-        saveDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-        final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
-        params[0].alpha = 0.7f;
-        getWindow().setAttributes(params[0]);
-        saveDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                params[0] = getWindow().getAttributes();
-                params[0].alpha = 1f;
-                getWindow().setAttributes(params[0]);
-            }
-        });
-    }
-
-    public void createMenuDialog() {
-        menuDialog = new MenuDialog(getApplicationContext());
-        menuDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-        final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
-        params[0].alpha = 0.7f;
-        getWindow().setAttributes(params[0]);
-        menuDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                params[0] = getWindow().getAttributes();
-                params[0].alpha = 1f;
-                getWindow().setAttributes(params[0]);
-            }
-        });
+        saveDialog = new SaveDialog(context);
+        createCustomDialog(saveDialog);
     }
 
     /**
@@ -235,7 +207,8 @@ public class MainActivity extends Activity {
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createMenuDialog();
+                menuDialog = new MenuDialog(context);
+                createCustomDialog(menuDialog);
             }
         });
     }
@@ -249,19 +222,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 brushDialog = new BrushDialog(getApplicationContext());
-                brushDialog.init();
-                brushDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-                final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
-                params[0].alpha = 0.7f;
-                getWindow().setAttributes(params[0]);
-                brushDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                    @Override
-                    public void onDismiss() {
-                        params[0] = getWindow().getAttributes();
-                        params[0].alpha = 1f;
-                        getWindow().setAttributes(params[0]);
-                    }
-                });
+                createCustomDialog(brushDialog);
             }
         });
 
@@ -270,19 +231,28 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 colorDialog = new ColorDialog(getApplicationContext());
-                colorDialog.setColorEditTextHint(InkPresenter.getStrokeColor());
-                colorDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-                final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
-                params[0].alpha = 0.7f;
+                createCustomDialog(colorDialog);
+            }
+        });
+    }
+
+    /**
+     * @param popupWindow
+     */
+    public void createCustomDialog(PopupWindow popupWindow) {
+        if (popupWindow instanceof ColorDialog) {
+            colorDialog.setColorEditTextHint(InkPresenter.getStrokeColor());
+        }
+        popupWindow.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
+        params[0].alpha = 0.7f;
+        getWindow().setAttributes(params[0]);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                params[0] = getWindow().getAttributes();
+                params[0].alpha = 1f;
                 getWindow().setAttributes(params[0]);
-                colorDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                    @Override
-                    public void onDismiss() {
-                        params[0] = getWindow().getAttributes();
-                        params[0].alpha = 1f;
-                        getWindow().setAttributes(params[0]);
-                    }
-                });
             }
         });
     }
@@ -291,11 +261,21 @@ public class MainActivity extends Activity {
      * 隐藏颜色选取面板弹出框
      */
     public void dismissColorDialog() {
-        colorDialog.dismiss();
+        colorDialog.delayAndDismiss(CustomDialog.delayMills);
     }
 
     public void dismissMenuDialog() {
-        menuDialog.dismiss();
+        menuDialog.delayAndDismiss(CustomDialog.delayMills);
+    }
+
+    public void finishMainActivity() {
+        Handler handle = new Handler();
+        handle.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.getMainActivity().finish();
+            }
+        }, CustomDialog.delayMills);
     }
 
     /**

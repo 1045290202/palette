@@ -20,12 +20,16 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
@@ -34,11 +38,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+
+import static android.graphics.Bitmap.*;
 
 public class InkPresenter extends View {
-    private static Paint paint;
-    private Bitmap cacheBitmap;
-    private Canvas cacheCanvas;
+    private static Paint paint = null;
+    private static Bitmap cacheBitmap = null;
+    private static Canvas cacheCanvas = null;
     private Path path = new Path();
     private Line line = new Line();
     private ArrayList<Line> lines = new ArrayList<>();
@@ -48,9 +55,8 @@ public class InkPresenter extends View {
     private int heightPixels = 0;
     private int linesCount = 0;
     private int restoreLinesCount = 0;
-    private int needToRestore = 0;
-    private int backgroundColor = 0xFFFAFAFA;
-    private PaintMode paintMode = PaintMode.ROUND;
+    private static int backgroundColor = 0xFFFAFAFA;
+    private static PaintMode paintMode = PaintMode.ROUND;
     private float preX, preY;
     private static String strokeColor = "#FF000000";
     private static int strokeWidth = 5;
@@ -78,34 +84,77 @@ public class InkPresenter extends View {
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStyle(Paint.Style.STROKE);
         paint.setDither(true);
+        ViewTreeObserver viewTreeObserver = this.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                widthPixels = getWidth();
+                heightPixels = getHeight();
+                cacheBitmap = createBitmap(widthPixels, heightPixels, Config.ARGB_8888);
+                cacheCanvas = new Canvas();
+                cacheCanvas.setBitmap(cacheBitmap);
+            }
+        });
     }
 
+    /**
+     * 设置笔触颜色
+     *
+     * @param strokeColor
+     */
     public static void setStrokeColor(String strokeColor) {
         InkPresenter.strokeColor = strokeColor;
+        MainActivity.getMainActivity().getInkPresenter().drawLines();
     }
 
+    /**
+     * 获取笔触颜色
+     *
+     * @return
+     */
     public static String getStrokeColor() {
         return strokeColor;
     }
 
+    /**
+     * 设置笔触宽度
+     *
+     * @param strokeWidth
+     */
     public static void setStrokeWidth(int strokeWidth) {
         InkPresenter.strokeWidth = strokeWidth;
+        MainActivity.getMainActivity().getInkPresenter().drawLines();
     }
 
+    /**
+     * 获取笔触宽度
+     *
+     * @return
+     */
     public static int getStrokeWidth() {
         return strokeWidth;
+    }
+
+    public static void setBgColor(int backgroundColor) {
+        InkPresenter.backgroundColor = backgroundColor;
+        MainActivity.getMainActivity().getInkPresenter().drawLines();
+    }
+
+    public static int getBgColor() {
+        return backgroundColor;
     }
 
     /**
      * 清空画板
      */
     public void clear() {
-        restoreLinesCount += linesCount;
-        needToRestore = linesCount;
         lines.clear();
         linesCount = 0;
         restoreLines.clear();
         restoreLinesCount = 0;
+        cacheBitmap = Bitmap.createBitmap(widthPixels, heightPixels, Config.ARGB_8888);
+        cacheCanvas.setBitmap(cacheBitmap);
         invalidate();
     }
 
@@ -119,7 +168,7 @@ public class InkPresenter extends View {
             restoreLinesCount++;
             lines.remove(linesCount - 1);
             linesCount--;
-            invalidate();
+            drawLines();
         }
     }
 
@@ -133,7 +182,7 @@ public class InkPresenter extends View {
             linesCount++;
             restoreLines.remove(restoreLinesCount - 1);
             restoreLinesCount--;
-            invalidate();
+            drawLines();
         }
     }
 
@@ -192,7 +241,7 @@ public class InkPresenter extends View {
      * @param fileFormat 文件格式
      * @throws IOException
      */
-    public void saveBitmap(String fileName, String fileFormat) throws IOException {
+    public void saveBitmap(String fileName, String fileFormat, Bitmap bitmap) throws IOException {
         String folderPath = "/sdcard/Pictures/palette/";
         File folder = new File(folderPath);
         if (!folder.exists()) {
@@ -204,9 +253,9 @@ public class InkPresenter extends View {
                     if (file.createNewFile()) {
                         FileOutputStream fileOutputStream = new FileOutputStream(file);
                         if (fileFormat.equals(".png")) {
-                            cacheBitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                            bitmap.compress(CompressFormat.PNG, 100, fileOutputStream);
                         } else {
-                            cacheBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                            bitmap.compress(CompressFormat.JPEG, 100, fileOutputStream);
                         }
                         fileOutputStream.flush();
                         fileOutputStream.close();
@@ -228,9 +277,9 @@ public class InkPresenter extends View {
                 if (file.createNewFile()) {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     if (fileFormat.equals(".png")) {
-                        cacheBitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                        bitmap.compress(CompressFormat.PNG, 100, fileOutputStream);
                     } else {
-                        cacheBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                        bitmap.compress(CompressFormat.JPEG, 100, fileOutputStream);
                     }
                     fileOutputStream.flush();
                     fileOutputStream.close();
@@ -253,16 +302,25 @@ public class InkPresenter extends View {
      * @param fileFormat
      */
     public void save(String fileName, String fileFormat) {
-        getCanvasWidth();
-        getCanvasHeight();
-        cacheBitmap = Bitmap.createBitmap(widthPixels, heightPixels, Bitmap.Config.ARGB_8888);
-        cacheCanvas = new Canvas();
-        cacheCanvas.setBitmap(cacheBitmap);
-        cacheCanvas.drawColor(backgroundColor);
-        drawLines(cacheCanvas);
-        cacheCanvas.drawBitmap(cacheBitmap, 0, 0, paint);
+        Canvas canvas = new Canvas();
+        Bitmap bitmap = createBitmap(widthPixels, heightPixels, Config.ARGB_8888);
+        canvas.setBitmap(bitmap);
+        canvas.drawColor(backgroundColor);
+        if (linesCount > 0) {
+            for (int j = 0; j < linesCount; j++) {
+                Line lineJ = lines.get(j);
+                paint.setStrokeWidth(dp2px((float) lineJ.getWidth()));
+                paint.setColor(lineJ.getColor());
+                if (lineJ.getPaintMode() == PaintMode.ROUND) {
+                    paint.setStrokeCap(Paint.Cap.ROUND);
+                } else if (lineJ.getPaintMode() == PaintMode.SQUARE) {
+                    paint.setStrokeCap(Paint.Cap.SQUARE);
+                }
+                canvas.drawPath(lineJ.getPath(), paint);
+            }
+        }
         try {
-            saveBitmap(fileName, fileFormat);
+            saveBitmap(fileName, fileFormat, bitmap);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -291,9 +349,9 @@ public class InkPresenter extends View {
                 try {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     if (fileFormat.equals(".png")) {
-                        cacheBitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                        cacheBitmap.compress(CompressFormat.PNG, 100, fileOutputStream);
                     } else {
-                        cacheBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                        cacheBitmap.compress(CompressFormat.JPEG, 100, fileOutputStream);
                     }
                     fileOutputStream.flush();
                     fileOutputStream.close();
@@ -309,23 +367,23 @@ public class InkPresenter extends View {
 
     /**
      * 画出所有的线
-     *
-     * @param canvas
      */
-    public void drawLines(Canvas canvas) {
-        int linesSize = lines.size();
-        if (linesSize != 0) {
-            for (int j = 0; j < linesSize; j++) {
-                Line line = lines.get(j);
-                paint.setStrokeWidth(dp2px((float) line.getWidth()));
-                paint.setColor(line.getColor());
-                if (line.getPaintMode() == PaintMode.ROUND) {
+    public void drawLines() {
+        if (linesCount >= 0) {
+            cacheBitmap = createBitmap(widthPixels, heightPixels, Config.ARGB_8888);
+            cacheCanvas.setBitmap(cacheBitmap);
+            for (int j = 0; j < linesCount; j++) {
+                Line lineJ = lines.get(j);
+                paint.setStrokeWidth(dp2px((float) lineJ.getWidth()));
+                paint.setColor(lineJ.getColor());
+                if (lineJ.getPaintMode() == PaintMode.ROUND) {
                     paint.setStrokeCap(Paint.Cap.ROUND);
-                } else if (line.getPaintMode() == PaintMode.SQUARE) {
+                } else if (lineJ.getPaintMode() == PaintMode.SQUARE) {
                     paint.setStrokeCap(Paint.Cap.SQUARE);
                 }
-                canvas.drawPath(line.getPath(), paint);
+                cacheCanvas.drawPath(lineJ.getPath(), paint);
             }
+            invalidate();
         }
     }
 
@@ -341,6 +399,8 @@ public class InkPresenter extends View {
         float y = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                paint.setStrokeWidth(dp2px(strokeWidth));
+                paint.setColor(Color.parseColor(strokeColor));
                 path.moveTo(x, y);
                 line.setWidth(strokeWidth);
                 line.setColor(Color.parseColor(strokeColor));
@@ -352,6 +412,7 @@ public class InkPresenter extends View {
                 line.setPath(path);
                 lines.add(line);
                 linesCount++;
+                System.out.println(linesCount);
                 if (restoreLinesCount != 0) {
                     restoreLines.clear();
                     restoreLinesCount = 0;
@@ -361,13 +422,15 @@ public class InkPresenter extends View {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (Math.abs(x - preX) > 0 && Math.abs(y - preY) > 0) {
-                    line.getPath().quadTo(preX, preY, (x + preX) / 2, (y + preY) / 2);
+                    path.quadTo(preX, preY, (x + preX) / 2, (y + preY) / 2);
+                    //line.getPath().quadTo(preX, preY, (x + preX) / 2, (y + preY) / 2);
                     lines.set(linesCount - 1, line);
                     preX = x;
                     preY = y;
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                cacheCanvas.drawPath(path, paint);
                 path = new Path();
                 line = new Line();
                 break;
@@ -383,9 +446,11 @@ public class InkPresenter extends View {
      */
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        //canvas.drawColor(backgroundColor);
-        drawLines(canvas);
+        canvas.drawColor(backgroundColor);
+        Paint p = new Paint();
+        canvas.drawBitmap(cacheBitmap, 0, 0, p);
+        canvas.drawPath(path, paint);
+        canvas.save(Canvas.ALL_SAVE_FLAG);
+        canvas.restore();
     }
-
 }

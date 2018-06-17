@@ -5,9 +5,17 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
+import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +26,17 @@ public class ColorPicker extends InkPresenter {
     private int diameterOfColorBlock = 40;
     private String[] colors = {
             "#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4", "#009688", "#4CAF50",
-            "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107", "#FF9800", "#FF5722", "#795548", "#9E9E9E", "#607D8B", "#000000"
+            "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107", "#FF9800", "#FF5722", "#795548", "#9E9E9E", "#607D8B", "#000000",
+            "#FAFAFA"
     };
     private List<ColorPickerPoint> points = new ArrayList<>();
+    private int startX, startY;
+    private static boolean hasShadow = false;
+    private static int shadowX, shadowY;
+    private static Handler handle = new Handler();
+    private static long startTime;
+    private static int pressedType;
+    private static int x, y;
 
     /**
      * 构造函数，设置画笔属性
@@ -35,7 +51,6 @@ public class ColorPicker extends InkPresenter {
         paint.setDither(true);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStrokeWidth(dp2px(diameterOfColorBlock));
     }
 
     /**
@@ -48,47 +63,34 @@ public class ColorPicker extends InkPresenter {
     protected void onDraw(Canvas canvas) {
         int width = this.getWidth();
         int column = px2dp(width) / lengthOfColorBlock;
-        int row = colors.length / column;
-        if (colors.length % column > 0) {
-            row += 1;
-        }
-        int remainder = px2dp(width) % lengthOfColorBlock;
         int widthCount = 0;
         int heightCount = 0;
-        for (int j = 0; j < row; j++) {
-            widthCount = 0;
-            if (j > 0) {
-                heightCount += lengthOfColorBlock;
-            } else {
-                heightCount += lengthOfColorBlock / 2;
-            }
-            if (j < row - 1) {
-                for (int i = 0; i < column; i++) {
-                    paint.setColor(Color.parseColor(colors[i + j * column]));
-                    if (i > 0) {
-                        widthCount += lengthOfColorBlock;
-                    } else {
-                        widthCount += lengthOfColorBlock / 2 + remainder / 2;
-                    }
-                    canvas.drawPoint(dp2px(widthCount), dp2px(heightCount), paint);
-                    points.add(new ColorPickerPoint(colors[i + j * column],
-                            widthCount - diameterOfColorBlock / 2, widthCount + diameterOfColorBlock / 2,
-                            heightCount - diameterOfColorBlock / 2, heightCount + diameterOfColorBlock / 2));
+        int remainder = px2dp(width) % lengthOfColorBlock;
+        for (int i = 0; i < colors.length; i++) {
+            if (i % column == 0) {
+                widthCount = lengthOfColorBlock / 2 + remainder / 2;
+                if (i == 0) {
+                    heightCount += lengthOfColorBlock / 2;
+                } else {
+                    heightCount += lengthOfColorBlock;
                 }
             } else {
-                for (int i = 0; i < colors.length % column; i++) {
-                    paint.setColor(Color.parseColor(colors[i + j * column]));
-                    if (i > 0) {
-                        widthCount += lengthOfColorBlock;
-                    } else {
-                        widthCount += lengthOfColorBlock / 2 + remainder / 2;
-                    }
-                    canvas.drawPoint(dp2px(widthCount), dp2px(heightCount), paint);
-                    points.add(new ColorPickerPoint(colors[i + j * column],
-                            widthCount - diameterOfColorBlock / 2, widthCount + diameterOfColorBlock / 2,
-                            heightCount - diameterOfColorBlock / 2, heightCount + diameterOfColorBlock / 2));
-                }
+                widthCount += lengthOfColorBlock;
             }
+            paint.setColor(Color.parseColor("#FF000000"));
+            paint.setStrokeWidth(dp2px(diameterOfColorBlock + 5));
+            canvas.drawPoint(dp2px(widthCount), dp2px(heightCount), paint);
+            paint.setColor(Color.parseColor(colors[i]));
+            paint.setStrokeWidth(dp2px(diameterOfColorBlock));
+            canvas.drawPoint(dp2px(widthCount), dp2px(heightCount), paint);
+            points.add(new ColorPickerPoint(colors[i],
+                    widthCount - diameterOfColorBlock / 2, widthCount + diameterOfColorBlock / 2,
+                    heightCount - diameterOfColorBlock / 2, heightCount + diameterOfColorBlock / 2, widthCount, heightCount));
+        }
+        if (hasShadow) {
+            paint.setColor(Color.parseColor("#33000000"));
+            paint.setStrokeWidth(dp2px(diameterOfColorBlock));
+            canvas.drawPoint(dp2px(shadowX), dp2px(shadowY), paint);
         }
         setColorPickerHeight(heightCount + lengthOfColorBlock / 2);
     }
@@ -101,19 +103,89 @@ public class ColorPicker extends InkPresenter {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int x = (int) event.getX();
-        int y = (int) event.getY();
+        x = (int) event.getX();
+        y = (int) event.getY();
+        pressedType = pressedType(startX, startY, (int) event.getX(), (int) event.getY(), startTime, System.currentTimeMillis(), 500);
+        if (pressedType == 4) {
+            handle.removeCallbacksAndMessages(null);
+        }
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            for (ColorPickerPoint colorPickerPoint : points) {
-                if (colorPickerPoint.inPoint(px2dp(x), px2dp(y))) {
-                    MainActivity.getMainActivity().setStrokeColor(colorPickerPoint.getColor().replace("#", "#FF"));
-                    MainActivity.getMainActivity().dismissColorDialog();
-                    MainActivity.getMainActivity().imageHint(R.drawable.circle, colorPickerPoint.getColor().replace("#", "#FF"));
+            if (pressedType == 1) {
+                for (ColorPickerPoint colorPickerPoint : points) {
+                    if (colorPickerPoint.inPoint(px2dp(x), px2dp(y))) {
+                        MainActivity.getMainActivity().setStrokeColor(colorPickerPoint.getColor().replace("#", "#FF"));
+                        MainActivity.getMainActivity().imageHint(R.drawable.circle, colorPickerPoint.getColor().replace("#", "#FF"));
+                        MainActivity.getMainActivity().dismissColorDialog();
+                        break;
+                    }
+                }
+            }
+            hasShadow = false;
+            handle.removeCallbacksAndMessages(null);
+            invalidate();
+        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            handle.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    for (ColorPickerPoint colorPickerPoint : points) {
+                        if (colorPickerPoint.inPoint(px2dp(x), px2dp(y))) {
+                            InkPresenter.setBgColor(Color.parseColor(colorPickerPoint.getColor()));
+                            hasShadow = false;
+                            Toast.makeText(getContext(), "画板背景色设置成功", Toast.LENGTH_SHORT).show();
+                            MainActivity.getMainActivity().dismissColorDialog();
+                            break;
+                        }
+                    }
+                }
+            }, 500);
+            startTime = System.currentTimeMillis();
+            startX = x;
+            startY = y;
+            for (int i = 0; i < 21; i++) {
+                if (points.get(i).inPoint(px2dp(x), px2dp(y))) {
+                    shadowX = points.get(i).centerX;
+                    shadowY = points.get(i).centerY;
+                    hasShadow = true;
+                    invalidate();
                     break;
                 }
             }
         }
         return true;
+    }
+
+    /**
+     * 触摸的类型
+     *
+     * @param startX
+     * @param startY
+     * @param thisX
+     * @param thisY
+     * @param lastDownTime
+     * @param thisEventTime
+     * @param longPressTime
+     * @return
+     */
+    public static int pressedType(int startX, int startY, int thisX,
+                                  int thisY, long lastDownTime, long thisEventTime,
+                                  long longPressTime) {
+        int offsetX = Math.abs(thisX - startX);
+        int offsetY = Math.abs(thisY - startY);
+        long intervalTime = thisEventTime - lastDownTime;
+        if (offsetX <= 10 && offsetY <= 10 && intervalTime >= longPressTime) {
+            return 0;
+        } else {
+            if (offsetX <= 10 && offsetY <= 10) {
+                if (!(intervalTime >= longPressTime)) {
+                    return 1;
+                }
+                return 2;
+            } else if (intervalTime >= longPressTime) {
+                return 3;
+            } else {
+                return 4;
+            }
+        }
     }
 
     /**
@@ -130,7 +202,7 @@ public class ColorPicker extends InkPresenter {
 
     class ColorPickerPoint {
         private String color;
-        private int left, right, top, bottom;
+        private int left, right, top, bottom, centerX, centerY;
 
         /**
          * 构造函数
@@ -141,12 +213,14 @@ public class ColorPicker extends InkPresenter {
          * @param top    单个色顶部位置
          * @param bottom 单个色点左边位置
          */
-        public ColorPickerPoint(String color, int left, int right, int bottom, int top) {
+        public ColorPickerPoint(String color, int left, int right, int bottom, int top, int centerX, int centerY) {
             this.color = color;
             this.left = left;
             this.right = right;
             this.top = top;
             this.bottom = bottom;
+            this.centerX = centerX;
+            this.centerY = centerY;
         }
 
         /**
@@ -170,6 +244,11 @@ public class ColorPicker extends InkPresenter {
          * @return
          */
         public String getColor() {
+            return color;
+        }
+
+        @Override
+        public String toString() {
             return color;
         }
     }

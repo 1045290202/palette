@@ -30,12 +30,10 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
                 int position = viewHolder.getAdapterPosition();
                 switch (position) {
                     case 0:
-                        Intent intent = new Intent(MainActivity.getMainActivity(), AboutActivity.class);
-                        MainActivity.getMainActivity().startActivity(intent);
                         MainActivity.getMainActivity().dismissMenuDialog();
                         break;
                     case 1:
-                        MainActivity.getMainActivity().finish();
+                        MainActivity.getMainActivity().finishMainActivity();
                         break;
                 }
             }
