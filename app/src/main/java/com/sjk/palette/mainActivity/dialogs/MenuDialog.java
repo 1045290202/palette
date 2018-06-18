@@ -1,19 +1,22 @@
-package com.sjk.palette;
+package com.sjk.palette.mainActivity.dialogs;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Path;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+
+import com.sjk.palette.mainActivity.MenuAdapter;
+import com.sjk.palette.aboutActivity.Option;
+import com.sjk.palette.R;
+import com.sjk.palette.aboutActivity.AboutActivity;
+import com.sjk.palette.mainActivity.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;

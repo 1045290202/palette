@@ -1,4 +1,4 @@
-package com.sjk.palette;
+package com.sjk.palette.mainActivity.dialogs;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -7,9 +7,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+
+import com.sjk.palette.R;
+import com.sjk.palette.mainActivity.MainActivity;
 
 public class BrushDialog extends CustomDialog {
     private View view;

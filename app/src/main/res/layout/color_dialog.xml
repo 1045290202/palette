@@ -22,7 +22,7 @@
             android:text="单击色块设置前景色，长按色块设置背景色"
             android:textColor="#ffaaaaaa" />
 
-        <com.sjk.palette.ColorPicker
+        <com.sjk.palette.mainActivity.dialogs.ColorPicker
             android:id="@+id/color_picker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

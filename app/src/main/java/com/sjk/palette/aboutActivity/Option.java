@@ -1,4 +1,4 @@
-package com.sjk.palette;
+package com.sjk.palette.aboutActivity;
 
 public class Option {
     private String optionName;

@@ -1,10 +1,12 @@
-package com.sjk.palette;
+package com.sjk.palette.mainActivity.dialogs;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+
+import com.sjk.palette.mainActivity.InkPresenter;
 
 public class PaintPreview extends InkPresenter {
     private static Paint paint;

@@ -1,10 +1,9 @@
-package com.sjk.palette;
+package com.sjk.palette.mainActivity;
 
 import android.graphics.Color;
 import android.graphics.Path;
-import android.graphics.PointF;
 
-import java.util.ArrayList;
+import com.sjk.palette.mainActivity.InkPresenter;
 
 /**
  * Line类包含路径、笔画粗细、颜色、笔触样式（新功能）

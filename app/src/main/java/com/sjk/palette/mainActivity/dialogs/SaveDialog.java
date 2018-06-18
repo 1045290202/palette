@@ -1,28 +1,22 @@
-package com.sjk.palette;
+package com.sjk.palette.mainActivity.dialogs;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.sjk.palette.mainActivity.InkPresenter;
+import com.sjk.palette.R;
+import com.sjk.palette.mainActivity.MainActivity;
 
 public class SaveDialog extends CustomDialog {
     private Context context;

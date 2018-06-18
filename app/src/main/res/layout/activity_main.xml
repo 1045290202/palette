@@ -6,30 +6,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFAFAFA"
-    tools:context=".MainActivity">
+    tools:context=".mainActivity.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.sjk.palette.TitleLayout
+        <com.sjk.palette.mainActivity.layout.TitleLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        </com.sjk.palette.TitleLayout>
+        </com.sjk.palette.mainActivity.layout.TitleLayout>
 
-        <com.sjk.palette.InkPresenter
+        <com.sjk.palette.mainActivity.InkPresenter
             android:id="@+id/inkPresenter"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <com.sjk.palette.ToolBarLayout
+        <com.sjk.palette.mainActivity.layout.ToolBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        </com.sjk.palette.ToolBarLayout>
+        </com.sjk.palette.mainActivity.layout.ToolBarLayout>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

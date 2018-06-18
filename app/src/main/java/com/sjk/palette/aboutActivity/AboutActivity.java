@@ -1,7 +1,6 @@
-package com.sjk.palette;
+package com.sjk.palette.aboutActivity;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -9,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +15,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.sjk.palette.mainActivity.CheckApkExist;
+import com.sjk.palette.R;
 
 import java.util.ArrayList;
 import java.util.List;

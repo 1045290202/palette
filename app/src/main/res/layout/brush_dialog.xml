@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
 
-            <com.sjk.palette.PaintPreview
+            <com.sjk.palette.mainActivity.dialogs.PaintPreview
                 android:id="@+id/paint_preview"
                 android:layout_width="50dp"
                 android:layout_height="50dp" />
