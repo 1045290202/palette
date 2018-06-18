@@ -10,7 +10,6 @@ public abstract class CustomDialog extends PopupWindow {
     public abstract void dialogInit(Context context);
 
     public void delayAndDismiss(int delayMills) {
-        MainActivity.getMainActivity().getInkPresenter().drawLines();
         Handler handle = new Handler();
         handle.postDelayed(new Runnable() {
             @Override
@@ -18,5 +17,6 @@ public abstract class CustomDialog extends PopupWindow {
                 dismiss();
             }
         }, delayMills);
+        MainActivity.getMainActivity().getInkPresenter().drawLines();
     }
 }

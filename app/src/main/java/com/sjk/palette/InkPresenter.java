@@ -321,6 +321,7 @@ public class InkPresenter extends View {
         }
         try {
             saveBitmap(fileName, fileFormat, bitmap);
+            bitmap.recycle();
         } catch (IOException e) {
             e.printStackTrace();
         }
