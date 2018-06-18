@@ -233,22 +233,23 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * @param popupWindow
+     * @param customDialog
      */
-    public void createCustomDialog(PopupWindow popupWindow) {
-        if (popupWindow instanceof ColorDialog) {
+    public void createCustomDialog(CustomDialog customDialog) {
+        if (customDialog instanceof ColorDialog) {
             colorDialog.setColorEditTextHint(InkPresenter.getStrokeColor());
         }
-        popupWindow.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        customDialog.showAtLocation(findViewById(R.id.main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
         final WindowManager.LayoutParams[] params = {getWindow().getAttributes()};
         params[0].alpha = 0.7f;
         getWindow().setAttributes(params[0]);
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+        customDialog.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 params[0] = getWindow().getAttributes();
                 params[0].alpha = 1f;
                 getWindow().setAttributes(params[0]);
+                inkPresenter.drawLines();
             }
         });
     }
@@ -296,6 +297,12 @@ public class MainActivity extends Activity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }
 

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
-import com.sjk.palette.mainActivity.MenuAdapter;
 import com.sjk.palette.aboutActivity.Option;
 import com.sjk.palette.R;
 import com.sjk.palette.aboutActivity.AboutActivity;

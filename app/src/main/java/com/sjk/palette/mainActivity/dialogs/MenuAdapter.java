@@ -1,4 +1,4 @@
-package com.sjk.palette.mainActivity;
+package com.sjk.palette.mainActivity.dialogs;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.sjk.palette.aboutActivity.Option;
 import com.sjk.palette.R;
+import com.sjk.palette.mainActivity.MainActivity;
 
 import java.util.List;
 
