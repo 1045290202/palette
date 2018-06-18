@@ -293,6 +293,7 @@ public class InkPresenter extends View {
                 createAlertDialog(file, filePath, fileFormat);
             }
         }
+        bitmap.recycle();
     }
 
     /**
@@ -321,7 +322,6 @@ public class InkPresenter extends View {
         }
         try {
             saveBitmap(fileName, fileFormat, bitmap);
-            bitmap.recycle();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -413,7 +413,6 @@ public class InkPresenter extends View {
                 line.setPath(path);
                 lines.add(line);
                 linesCount++;
-                System.out.println(linesCount);
                 if (restoreLinesCount != 0) {
                     restoreLines.clear();
                     restoreLinesCount = 0;
@@ -448,10 +447,7 @@ public class InkPresenter extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(backgroundColor);
-        Paint p = new Paint();
-        canvas.drawBitmap(cacheBitmap, 0, 0, p);
+        canvas.drawBitmap(cacheBitmap, 0, 0, paint);
         canvas.drawPath(path, paint);
-        canvas.save(Canvas.ALL_SAVE_FLAG);
-        canvas.restore();
     }
 }
