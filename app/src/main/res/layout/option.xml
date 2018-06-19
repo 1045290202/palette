@@ -17,6 +17,7 @@
 
         <TextView
             android:id="@+id/option_name"
+            android:textColor="#838383"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
